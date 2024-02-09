@@ -6,6 +6,7 @@ from transliterate import translit
 
 
 def index(request):
+<<<<<<< HEAD
     profiles=Profile.objects.all()
     if request.method=='POST':
         form=IcecreamForms(request.POST,request.FILES)
@@ -32,6 +33,12 @@ def index(request):
         'title':'text',
         'profiles':profiles,
         'form':form,
+=======
+    profiles=Profile.objects.order_by('pk')
+    context={
+        'title':'text',
+        'profiles':profiles
+>>>>>>> 1a650661f41c000c90c55023eb10a39d4bc66ffe
     }
     return render(request,'mains/index.html',context=context)
 
