@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Form</title>
+</head>
+<body>
+    <h1>Email Form</h1>
+
+    {% if success %}
+        <p>Email sent successfully!</p>
+    {% else %}
+        <form method="post" action="{%url 'first_form'%}" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit">Submit</button>
+        </form>
+    {% endif %}
+</body>
+</html>

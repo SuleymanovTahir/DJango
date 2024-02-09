@@ -1,0 +1,22 @@
+{% load mptt_tags %}
+
+{% recursetree nodes %}
+
+{% if not node.is_leaf_node %}
+{% endif %}
+{{ children }}
+{% if not node.is_leaf_node %}
+{% endif %}
+
+{% endrecursetree %}
+
+{% for item in menu_items %}
+    {{ item.name }}
+    {% if item.children.count > 0 %}
+        <ul>
+            {% for child in item.children.all %}
+                <li>{{ child.name }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endfor %}

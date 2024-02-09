@@ -10,7 +10,18 @@
 <body>
     <h1>{{title}}</h1>
     {%for profile in profiles%}
-    {{profile.name}}
+    <a href="{}">{{profile.name}}</a>
     {%endfor%}
+
+    <a href="{%url 'first_form'%}">обратная форма</a>
+{%if success%}
+<p>Ваша форма успешно отправлена</p>
+{%endif%}
+<form action="{% url 'home' %}" method="post" enctype="multipart/form-data">
+    {%csrf_token%}
+    {{form}}
+    <button type="submit">Отправить</button>
+</form>
+    <script src="{%static 'mains/js/script.js' %}"></script>
 </body>
 </html>
