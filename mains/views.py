@@ -6,7 +6,6 @@ from transliterate import translit
 
 
 def index(request):
-<<<<<<< HEAD
     profiles=Profile.objects.all()
     if request.method=='POST':
         form=IcecreamForms(request.POST,request.FILES)
@@ -33,12 +32,6 @@ def index(request):
         'title':'text',
         'profiles':profiles,
         'form':form,
-=======
-    profiles=Profile.objects.order_by('pk')
-    context={
-        'title':'text',
-        'profiles':profiles
->>>>>>> 1a650661f41c000c90c55023eb10a39d4bc66ffe
     }
     return render(request,'mains/index.html',context=context)
 
@@ -50,13 +43,13 @@ def detail_card(request,id):
     return render(request,'mains/profile_detail.html',context=context)
 
 
-from .models import MenuItem
+# from .models import MenuItem
 from django.core.mail import EmailMessage
 from .forms import *
 
-def menu_view(request):
-    menu_items = MenuItem.objects.all()
-    return render(request, 'mains/three_menu.html', {'menu_items': menu_items})
+# def menu_view(request):
+#     menu_items = MenuItem.objects.all()
+#     return render(request, 'mains/three_menu.html', {'menu_items': menu_items})
 
 def first_form(request):
     if request.method=='POST':
@@ -81,7 +74,28 @@ def first_form(request):
         
     context={'form':form}
     return render(request, 'mains/mail_form.html', context)
-    
+
+
+def post(request):
+    post_all=Post.objects.all()
+    context={
+        'post_all':post_all
+        }
+    return render(request,'mains/post.html',context=context)
+
+def post_cooment(request,slug):
+    post=get_object_or_404(Comments,slug=slug,status=Post.status.PUBLISHED)
+    comment=None
+    form=CommentForm(request.POST)
+    if form.is_valid():
+        comment=form.save(commit=False)
+        comment.post=post
+        comment.save()
+        context={'post': post,
+        'form': form,
+        'comment': comment,
+        }
+        return render(request,'mains/post_card.html',context=context)
 
 
 # def create_icecream_objects():

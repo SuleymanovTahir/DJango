@@ -31,3 +31,7 @@ class IcecreamForms(forms.ModelForm):
         fields=('name','description','photo','file')
         # fields=('name', 'description', 'photo', 'file', 'slug')
 
+
+class CommentForm(forms.Form):
+    models=Comments
+    fields = ['name', 'email', 'body']

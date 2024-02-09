@@ -1,13 +1,12 @@
 from django.db import models
-<<<<<<< HEAD
 from django.db.models.signals import post_migrate
 from django.dispatch import receiver
 from django.utils.text import slugify
 from transliterate import translit
-=======
+from django.urls import reverse
 from django.utils import timezone
-from datetime import timedelta
->>>>>>> 1a650661f41c000c90c55023eb10a39d4bc66ffe
+
+
 
 #Создаю модельку OneToMany
 class Product(models.Model):
@@ -225,12 +224,59 @@ def create_icecream_data(sender,**kwargs):
     #         'description':icecream_data['description']
     #     })
 
-from mptt.models import MPTTModel, TreeForeignKey
+# from mptt.models import MPTTModel, TreeForeignKey
 
-class MenuItem(MPTTModel):
-    name = models.CharField(max_length=50)
-    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
-    url = models.CharField(max_length=200, null=True, blank=True)
+# class MenuItem(MPTTModel):
+#     name = models.CharField(max_length=50)
+#     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+#     url = models.CharField(max_length=200, null=True, blank=True)
     
-    class MPTTMeta:
-        order_insertion_by = ['name']
+#     class MPTTMeta:
+#         order_insertion_by = ['name']
+
+class Post(models.Model):
+    class Status(models.TextChoices):
+        DRAFT = 'DF', 'Draft'
+        PUBLISHED = 'PB', 'Published'
+        
+    title = models.CharField(max_length=250)
+    slug = models.SlugField(max_length=250)
+    author = models.ForeignKey(User,on_delete=models.CASCADE,related_name='blog_posts')
+    body = models.TextField()
+    publish = models.DateTimeField(default=timezone.now)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=2,choices=Status.choices,default=Status.DRAFT)
+
+    class Meta:
+        ordering = ['-publish']
+        indexes = [models.Index(fields=['-publish']),]
+        verbose_name='Пост'
+        verbose_name_plural='Посты'
+        
+    def __str__(self):
+        return self.title
+    
+    def get_absolute_url(self):
+        return reverse('blog:post_detail',args=[self.id])
+
+class Comments(models.Model):
+    post = models.ForeignKey(Icecream,on_delete=models.CASCADE,related_name='comments')
+    name=models.CharField(max_length=255)
+    email=models.EmailField()
+    body=models.TextField()
+    created=models.DateTimeField(auto_now_add=True)
+    updated=models.DateTimeField(auto_now=True)
+    active=models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['created']
+        verbose_name='Коментарий'
+        verbose_name_plural='Коментарии'
+
+    def __str__(self):
+        return f'Comment by {self.name} on {self.post}'
+    
+    def get_absolute_url(self):
+        return reverse('post_card',args=[self.slug])
+    
