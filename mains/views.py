@@ -1,8 +1,8 @@
 from django.shortcuts import render,get_object_or_404
 from .models import *
+from django.views.decorators.http import require_POST
 from django.conf import settings
-from django.utils.text import slugify
-from transliterate import translit
+
 
 
 def index(request):
@@ -35,12 +35,12 @@ def index(request):
     }
     return render(request,'mains/index.html',context=context)
 
-def detail_card(request,id):
-    profile=get_object_or_404(Profile,id=id)
-    context={
-        'profile':profile
-    }
-    return render(request,'mains/profile_detail.html',context=context)
+# def detail_card(request,id):
+#     profile=get_object_or_404(Profile,id=id)
+#     context={
+#         'profile':profile
+#     }
+#     return render(request,'mains/profile_detail.html',context=context)
 
 
 # from .models import MenuItem
@@ -83,20 +83,51 @@ def post(request):
         }
     return render(request,'mains/post.html',context=context)
 
-def post_cooment(request,slug):
-    post=get_object_or_404(Comments,slug=slug,status=Post.status.PUBLISHED)
-    comment=None
-    form=CommentForm(request.POST)
-    if form.is_valid():
-        comment=form.save(commit=False)
-        comment.post=post
-        comment.save()
-        context={'post': post,
-        'form': form,
-        'comment': comment,
-        }
-        return render(request,'mains/post_card.html',context=context)
 
+
+def post_detail(request, slug):
+    post = get_object_or_404(Post,status=Post.Status.PUBLISHED,slug=slug)
+ # Список активных комментариев к этому посту
+    comments = post.comments.filter(active=True)
+    form = CommentForm(data=request.POST)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        print(comment,'ПЕРВОЕ')
+        print(comment.post,'ВТОРОЕ')
+        # Назначить пост комментарию
+        comment.post = post
+        # Сохранить комментарий в базе данных
+        comment.save()
+ # Форма для комментирования пользователями
+    # form = CommentForm()
+    context={
+        'post': post,
+        'comments': comments,
+        'form': form
+        }
+    return render(request,'mains/post_detail.html',context=context)
+
+# # @require_POST
+# def post_comment(request, slug):
+#     post = get_object_or_404(Post,
+#     slug=slug,
+#     status=Post.Status.PUBLISHED)
+#     comment = None
+#     # Комментарий был отправлен
+#     form = CommentForm(data=request.POST)
+#     if form.is_valid():
+#         # Создать объект класса Comment, не сохраняя его в базе данных
+#         comment = form.save(commit=False)
+#         print(comment,'ПЕРВОЕ')
+#         print(comment.post,'ВТОРОЕ')
+#         # Назначить пост комментарию
+#         comment.post = post
+#         # Сохранить комментарий в базе данных
+#         comment.save()
+#         return render(request, 'mains/post_detail.html',
+#                       {'post': post,
+#                       'form': form,
+#                       'comment': comment})
 
 # def create_icecream_objects():
 #     icecream_db = [
