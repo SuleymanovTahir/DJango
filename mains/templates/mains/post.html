@@ -1,25 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-{% block content %}
- <h1>My Blog</h1>
- 
- {% for post in post_all %}
- <h2>
- <a href="{{ post.get_absolute_url }}">
- {{ post.title }}
- </a>
- </h2>
- <p class="date">
- Published {{ post.publish }} by {{ post.author }}
- </p>
- {{ post.body|truncatewords:30|linebreaks }}
- {% endfor %}
-{% endblock %}
+
+<body>
+    <h1>My Blog</h1>
+
+    {% for post in post_all %}
+
+    <a href="{{ post.get_absolute_url }}">
+        {{ post.title }}
+    </a>
+
+    <p>Теги:{{post.tags.all|join:', '}}</p>
+    <p class="date">
+        Published {{ post.publish }} by {{ post.author }}
+    </p>
+    {{ post.body|truncatewords:30|linebreaks }}
+    {% endfor %}
+
 
 </body>
+
 </html>

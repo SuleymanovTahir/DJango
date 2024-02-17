@@ -34,10 +34,14 @@ class CommentAdmin(admin.ModelAdmin):
     
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author', 'publish', 'status')  # Customize displayed fields
+    list_display = ('title', 'author','display_tags', 'publish', 'status')  # Customize displayed fields
     list_filter = ('status', 'created', 'publish', 'author')  # Add filters for better navigation
     search_fields = ('title', 'body')  # Add search functionality for these fields
     prepopulated_fields = {'slug': ('title',)}  # Automatically populate the slug field based on the title
     raw_id_fields = ('author',)  # Use raw_id_fields for better performance if you have many authors
     date_hierarchy = 'publish'  # Add date-based navigation hierarchy
     ordering = ('status', 'publish')  # Define default ordering
+
+
+    def display_tags(self,obj):
+        return ', '.join(tag.name for tag in obj.tags.all())

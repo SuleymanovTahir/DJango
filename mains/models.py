@@ -5,6 +5,8 @@ from django.utils.text import slugify
 from transliterate import translit
 from django.urls import reverse
 from django.utils import timezone
+from taggit.managers import TaggableManager
+from taggit.models import Tag
 
 
 
@@ -167,7 +169,8 @@ class Post(models.Model):
     class Status(models.TextChoices):
         DRAFT = 'DF', 'Draft'
         PUBLISHED = 'PB', 'Published'
-        
+
+    tags=TaggableManager()
     title = models.CharField(max_length=250)
     slug = models.SlugField(max_length=250)
     author = models.ForeignKey(User,on_delete=models.CASCADE,related_name='blog_posts')
@@ -178,7 +181,7 @@ class Post(models.Model):
     status = models.CharField(max_length=2,choices=Status.choices,default=Status.DRAFT)
     slug = models.SlugField(max_length=250,unique_for_date='publish')
 
-    class Meta:
+    class Meta: 
         ordering = ['-publish']
         indexes = [models.Index(fields=['-publish']),]
         verbose_name='Пост'
@@ -205,7 +208,7 @@ class Comments(models.Model):
         verbose_name_plural='Коментарии'
 
     def __str__(self):
-        return f'Comment by {self.name} on {self.post}'
+        return f'Comment by {self.name}'
     
     def get_absolute_url(self):
         return reverse('post_card',args=[self.slug])

@@ -83,51 +83,33 @@ def post(request):
         }
     return render(request,'mains/post.html',context=context)
 
-
-
-def post_detail(request, slug):
-    post = get_object_or_404(Post,status=Post.Status.PUBLISHED,slug=slug)
- # Список активных комментариев к этому посту
-    comments = post.comments.filter(active=True)
-    form = CommentForm(data=request.POST)
-    if form.is_valid():
-        comment = form.save(commit=False)
-        print(comment,'ПЕРВОЕ')
-        print(comment.post,'ВТОРОЕ')
-        # Назначить пост комментарию
-        comment.post = post
-        # Сохранить комментарий в базе данных
-        comment.save()
- # Форма для комментирования пользователями
-    # form = CommentForm()
+def post_detail(request,slug):
+    post=get_object_or_404(Post,slug=slug)
+    comments=post.comments.all()
+    tags = post.tags.all()
+    # Фильтруйте посты по тегу
+    post_list = Post.objects.filter(tags__in=tags)
+    if request.method=='POST':
+        form=CommentForm(request.POST)
+        if form.is_valid():
+            comment=form.save(commit=False)
+            comment.post=post
+            comment.save()
+    else:
+        form=CommentForm()
     context={
         'post': post,
         'comments': comments,
-        'form': form
+        'form': form,
+        'tags':tags,
+        'post_list':post_list
         }
     return render(request,'mains/post_detail.html',context=context)
+            
+            
 
-# # @require_POST
-# def post_comment(request, slug):
-#     post = get_object_or_404(Post,
-#     slug=slug,
-#     status=Post.Status.PUBLISHED)
-#     comment = None
-#     # Комментарий был отправлен
-#     form = CommentForm(data=request.POST)
-#     if form.is_valid():
-#         # Создать объект класса Comment, не сохраняя его в базе данных
-#         comment = form.save(commit=False)
-#         print(comment,'ПЕРВОЕ')
-#         print(comment.post,'ВТОРОЕ')
-#         # Назначить пост комментарию
-#         comment.post = post
-#         # Сохранить комментарий в базе данных
-#         comment.save()
-#         return render(request, 'mains/post_detail.html',
-#                       {'post': post,
-#                       'form': form,
-#                       'comment': comment})
+
+
 
 # def create_icecream_objects():
 #     icecream_db = [

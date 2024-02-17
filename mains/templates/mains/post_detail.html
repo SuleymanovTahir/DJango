@@ -8,12 +8,35 @@
 </head>
 
 <body>
+    <h1>Посты с тегом "{{ tags.all|join:'' }}"</h1>
+    {% for post in post_list %}
+    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+    <!-- Другие детали поста -->
+    {% endfor %}
+        
+
+    <br>
+    <br>
+    <br>
+    <br>
+    {{comments.all|join:', '}}
+    <!-- {%for comment in comments%}
+    {{comment.name}}
+    {{comment.email}}
+    {{comment.body}}
+
+    {%endfor%} -->
+    {%if success%}
+    <p>Комментарий добавлен</p>
+    {%else%}
     <h2>Add a new comment</h2>
     <form action="{% url 'post_detail' slug=post.slug %}" method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <p><input type="submit" value="Add comment"></p>
     </form>
+    {%endif%}
+
 </body>
 
 </html>
